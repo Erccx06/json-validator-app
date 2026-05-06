@@ -1,0 +1,41 @@
+{
+  "payments": {
+    "paymentAmount": 100,
+    "paymentCurrency": "USD",
+    "requestedExecutionDate": "2026-05-06",
+    "paymentIdentifiers": {
+      "endToEndId": "E2E-123456"
+    },
+    "transferType": "CREDIT",
+    "paymentType": "RTP",
+
+    "debtor": {
+      "debtorAccount": {
+        "accountId": "000001234567890"
+      }
+    },
+
+    "debtorAgent": {
+      "financialInstitutionId": {
+        "bic": "CHASUS33"
+      }
+    },
+
+    "creditorAgent": {
+      "financialInstitutionId": {
+        "bic": "CHASUS33"
+      }
+    },
+
+    "creditor": {
+      "creditorName": "Jane Smith",
+      "creditorAccount": {
+        "accountId": "123456789"
+      }
+    },
+
+    "remittanceInformation": {
+      "unstructuredInformation": ["Payment for invoice 123"]
+    }
+  }
+}
