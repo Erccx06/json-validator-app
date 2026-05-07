@@ -19,6 +19,7 @@ schema = resolved_schema["components"]["schemas"]["PaymentInitationDetails"]
 def home():
     result = ""
     formatted_json = ""
+    user_input = ""
     
     if request.method == "POST":
         user_input = request.form["json_input"]
@@ -38,7 +39,12 @@ def home():
         except ValidationError as e:
             result = f"❌ Schema validation error: {e.message}"
 
-    return render_template("index.html", result=result, formatted_json=formatted_json)
+    return render_template(
+    "index.html",
+    result=result,
+    formatted_json=formatted_json,
+    json_input=user_input
+)
 
 if __name__ == "__main__":
     app.run(debug=True)
