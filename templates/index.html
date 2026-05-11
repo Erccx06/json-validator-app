@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html>
 <head>
     <title>JSON Validator & Formatter</title>
@@ -33,13 +33,25 @@
     <h1>JSON Validator & Formatter</h1>
 
     <form method="POST">
-        <textarea name="json_input" rows="20" cols="80">{{ json_input }}</textarea>
-        <button type="submit">Validate & Format</button>
-    </form>
+
+    <label for="schema_type">Select Schema:</label>
+    <select name="schema_type">
+        <option value="global" {% if selected_schema == "global" %}selected{% endif %}>Global Payments</option>
+        <option value="ach" {% if selected_schema == "ach" %}selected{% endif %}>ACH Payments</option>
+    </select>
+
+    <br><br>
+
+    <textarea name="json_input" rows="20" cols="80">{{ json_input }}</textarea>
+    <button type="submit">Validate & Format</button>
+
+</form>
 
     <div class="result">
         {{ result }}
     </div>
+
+        <p><strong>Schema Used:</strong> {{ selected_schema | capitalize }}</p>
 
     {% if formatted_json %}
     <h2>Formatted JSON:</h2>

@@ -1,0 +1,1559 @@
+openapi: 3.0.0
+info:
+  title: Low Value and ACH Payments API
+  description: Initiate low-value ACH credit transfers across the globe with this API, giving you detailed control over payment instructions and account details, while receiving real-time status updates through secure, digitally signed requests. You can easily support multiple payment schemes in WHEM (Western Hemisphere;  North, Central, and South America), EMEA (Europe, Middle East, and Africa), and APAC (Asia-Pacific) regions, streamlining your payment operations and tracking every transaction as it happens.
+  version: 1.1.1
+servers:
+  - url: https://apigateway.jpmorgan.com/tsapi/v1
+    description: PRODUCTION - MTLS
+  - url: https://apigatewayqaf.jpmorgan.com/tsapi/v1
+    description: CLIENT TESTING - MTLS
+
+tags:
+  - name: Payment Initiation
+    description: description
+paths:
+  /payments/ach/credit:
+    post:
+      summary: Payment Initiation
+      operationId: initiateCreditTransfer
+      description: "\n### DIGITAL SIGNATURE REQUIRED ###\n\n\n To view detailed data mapping for API request fields, including field descriptions and requirements by payment type and geography, [sign in to your account](https://developer.payments.jpmorgan.com/console/login) and add the product to your Personal Workspace. This provides access to the full spreadsheet, which outlines each field and indicates whether it is required, optional, or conditionally required for your use case, as well as other downloadable reference materials available in the workspace. For instructions, refer to our [Quick Start Guide](https://payments-developer-portal.prod.aws.jpmchase.net/preview/docs/quick-start).\n\n- The endToEndId field must not exceed 15-characters.\n- Only alphanumeric characters are allowed in endToEndId. Any non-alphanumeric values may cause processing issues. Hyphens and colons are not permitted as the first character.\n- If alphabetic characters are used in endToEndId, they must be uppercase. \n- The retention period for endToEndId can be six months or one year, depending on your production setup. Reusing the same endToEndId within the retention period will result in payment rejection. After the retention period, the same endToEndId can be reused.\n- The Payment Status Track and Trace API can be queried using endToEndId. If more than one payment exists with the same endToEndId after the retention period, the API will return the status of the latest payment.\n- The Content-Type header must be set to text/xml, with the payload being a digitally signed version of the JSON request body as documented in this specification.\n"
+      parameters: []
+      x-examples:
+        - name: USD ACH Credit Transfer (Mandatory Fields)
+          description: USD ACH Credit Transfer (Mandatory Fields)
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+                localInstrument:
+                  code: CCD
+              requestedExecutionDate: '2020-03-11'
+              debtor:
+                name: Test Name
+                postalAddress:
+                  country: US
+                organizationId:
+                  other:
+                    - id: '4192662001'
+                      schemeName:
+                        proprietary: JPMCOID
+              debtorAccount:
+                accountNumber: '945958726'
+                currency: USD
+              debtorAgent:
+                aba: '021000021'
+                country: US
+              creditTransferTransactionInformation:
+                endToEndId: E2E001
+                amount:
+                  instructedAmount:
+                    currency: USD
+                    amount: 101.39
+                creditorAgent:
+                  financialInstitutionId:
+                    aba: '021000021'
+                    postalAddress:
+                      country: US
+                creditor:
+                  name: SAMPLE CREDITOR
+                  postalAddress:
+                    country: US
+                creditorAccount:
+                  accountNumber: '945958759'
+        - name: SEPA Credit Transfer (Mandatory fields)
+          description: SEPA Credit Transfer (Mandatory fields)
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: SEPA
+              requestedExecutionDate: '2020-04-15'
+              debtor:
+                name: Sample Debtor Name
+                postalAddress:
+                  country: GB
+                organizationId:
+                  other:
+                    - id: '123456'
+                      schemeName:
+                        proprietary: JPMCOID
+              debtorAccount:
+                currency: EUR
+                iban: GB45CHAS61234567891234
+              debtorAgent:
+                country: GB
+                bic: CHASGB2L
+              creditTransferTransactionInformation:
+                endToEndId: E2E001
+                amount:
+                  instructedAmount:
+                    currency: GBP
+                    amount: 10
+                creditorAgent:
+                  financialInstitutionId:
+                    postalAddress:
+                      country: FR
+                    bic: CHASGB2L
+                creditor:
+                  name: Sample Creditor
+                  postalAddress:
+                    country: FR
+                creditorAccount:
+                  iban: FR2420041010100282687W01234
+        - name: UK BACS Credit Transfer (Mandatory fields)
+          description: UK BACS Credit Transfer (Mandatory fields)
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+              requestedExecutionDate: '2020-05-21'
+              debtor:
+                name: sample debtor name
+                postalAddress:
+                  country: GB
+                organizationId:
+                  other:
+                    - id: '9573207'
+                      schemeName:
+                        proprietary: JPMCOID
+              debtorAccount:
+                accountNumber: '8363110334'
+                currency: GBP
+              debtorAgent:
+                bic: CHASGB2L
+                country: GB
+              creditTransferTransactionInformation:
+                endToEndId: 137CTGBP
+                amount:
+                  instructedAmount:
+                    currency: GBP
+                    amount: 10.39
+                creditorAgent:
+                  financialInstitutionId:
+                    memberId: '609242'
+                    postalAddress:
+                      country: GB
+                creditor:
+                  name: sample creditor name
+                  postalAddress:
+                    country: GB
+                creditorAccount:
+                  accountNumber: '8659784511'
+        - name: AUD Credit Transfer (Mandatory fields)
+          description: AUD Credit Transfer (Mandatory fields)
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+              requestedExecutionDate: '2020-05-21'
+              debtor:
+                name: sample debtor name
+                postalAddress:
+                  country: AU
+              debtorAccount:
+                accountNumber: '8363110333'
+                currency: AUD
+              debtorAgent:
+                bic: CHASAU2X
+                country: AU
+              creditTransferTransactionInformation:
+                endToEndId: 330CTAUD
+                amount:
+                  instructedAmount:
+                    currency: AUD
+                    amount: 101.01
+                creditorAgent:
+                  financialInstitutionId:
+                    memberId: 342-085
+                    postalAddress:
+                      country: AU
+                creditor:
+                  name: sample creditor name
+                  postalAddress:
+                    country: AU
+                creditorAccount:
+                  accountNumber: '8659784510'
+                purpose:
+                  proprietary: '50'
+        - name: CAD Credit Transfer (Mandatory fields)
+          description: CAD Credit Transfer (Mandatory fields)
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+              requestedExecutionDate: '2020-05-21'
+              debtor:
+                name: sample debtor name
+                postalAddress:
+                  country: CA
+                organizationId:
+                  other:
+                    - id: '4192662002'
+                      schemeName:
+                        proprietary: JPMCOID
+              debtorAccount:
+                accountNumber: '4000011242'
+                currency: CAD
+              debtorAgent:
+                bic: CHASCATT
+                country: CA
+              creditTransferTransactionInformation:
+                endToEndId: 565CTCAD
+                amount:
+                  instructedAmount:
+                    currency: CAD
+                    amount: 101.39
+                creditorAgent:
+                  financialInstitutionId:
+                    memberId: '011122222'
+                    postalAddress:
+                      country: CA
+                creditor:
+                  name: sample creditor name
+                  postalAddress:
+                    country: CA
+                creditorAccount:
+                  accountNumber: '945958759'
+                purpose:
+                  proprietary: '450'
+        - name: IAT Credit Transfer (Mandatory fields with structured address)
+          description: IAT Credit Transfer (Mandatory fields with structured address)
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+                localInstrument:
+                  code: IAT
+              requestedExecutionDate: '2020-04-29'
+              debtor:
+                name: Sample Debtor Name
+                postalAddress:
+                  country: US
+                  streetName: TEST STREET
+                  townName: NEW YORK CITY
+                  postCode: (This is recommended, not mandatory) 12345
+                  countrySubDivision: (This is recommended, not mandatory) NY
+                organizationId:
+                  other:
+                    - id: '1111111111'
+                      schemeName:
+                        proprietary: JPMCOID
+              debtorAccount:
+                accountNumber: '99999999'
+                currency: USD
+              debtorAgent:
+                aba: '021000021'
+                name: JPM CHASE NEW YORK
+                country: US
+              creditTransferTransactionInformation:
+                endToEndId: '12345678'
+                amount:
+                  instructedAmount:
+                    currency: USD
+                    amount: 1
+                creditorAgent:
+                  financialInstitutionId:
+                    aba: '021000021'
+                    name: JPM CHASE NEW YORK
+                    postalAddress:
+                      country: US
+                creditor:
+                  name: YOUR PAYABLES VENDOR
+                  postalAddress:
+                    country: CN
+                    streetName: KONG KONG STREET
+                    townName: WAN CHAI
+                    postCode: (This is recommended, not mandatory) 999077
+                    countrySubDivision: (This is recommended, not mandatory) HONG KONG
+                creditorAccount:
+                  accountNumber: '123456789'
+        - name: IAT Credit Transfer (Mandatory fields with unstructured address)
+          description: IAT Credit Transfer (Mandatory fields with unstructured address)
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+                localInstrument:
+                  code: IAT
+              requestedExecutionDate: '2020-04-29'
+              debtor:
+                name: Sample Debtor Name
+                postalAddress:
+                  streetName: 100 Broadway
+                  townName: Toronto
+                  country: CA
+                  addressLine:
+                    - 100 Broadway
+                    - Suite 100
+                organizationId:
+                  other:
+                    - id: '1111111111'
+                      schemeName:
+                        proprietary: JPMCOID
+              debtorAccount:
+                accountNumber: '99999999'
+                currency: USD
+              debtorAgent:
+                aba: '021000021'
+                name: JPM CHASE NEW YORK
+                country: US
+              creditTransferTransactionInformation:
+                endToEndId: '12345678'
+                amount:
+                  instructedAmount:
+                    currency: USD
+                    amount: 1
+                creditorAgent:
+                  financialInstitutionId:
+                    aba: '021000021'
+                    name: JPM CHASE NEW YORK
+                    postalAddress:
+                      country: US
+                creditor:
+                  name: YOUR PAYABLES VENDOR
+                  postalAddress:
+                    townName: Tampa
+                    country: US
+                    addressLine:
+                      - 900 Main Street
+                      - Suite 200
+                creditorAccount:
+                  accountNumber: '123456789'
+        - name: HK Credit Transfer
+          description: HK Credit Transfer
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              chargeBearer: DEBT
+              creditTransferTransactionInformation:
+                amount:
+                  instructedAmount:
+                    amount: 30
+                    currency: HKD
+                creditor:
+                  name: YOUR PAYABLES VENDOR
+                  postalAddress:
+                    addressLine:
+                      - 'AB COMPANY LIMITEDRoom 789,Sum '
+                      - Address1 Road,Wan
+                      - ' Chai'
+                    country: HK
+                creditorAccount:
+                  accountNumber: '17171717'
+                creditorAgent:
+                  financialInstitutionId:
+                    memberId: '006391'
+                    name: Citibank, N.A., Hong Kong Branch
+                    postalAddress:
+                      country: HK
+                endToEndId: FL210114100957
+                purpose:
+                  code: OTHR
+                remittanceInformation:
+                  unstructured:
+                    - JPMC ACH test data
+              debtor:
+                name: JPM CLIENT NAME
+                postalAddress:
+                  addressLine:
+                    - Room 123,Sun Hung Kai Centre,30 Harbour Road,Wan Chai
+                  country: HK
+              debtorAccount:
+                accountNumber: '0123456789'
+                currency: HKD
+              debtorAgent:
+                bic: CHASHKHH
+                country: HK
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+              requestedExecutionDate: '2021-01-14'
+        - name: SG Credit Transfer
+          description: SG Credit Transfer
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+              requestedExecutionDate: '2020-11-02'
+              debtor:
+                name: Client Pte Ltd
+                postalAddress:
+                  country: SG
+              debtorAccount:
+                accountNumber: '111111111'
+                currency: SGD
+              debtorAgent:
+                bic: CHASSGSG
+                country: SG
+              chargeBearer: DEBT
+              creditTransferTransactionInformation:
+                endToEndId: '5067'
+                amount:
+                  instructedAmount:
+                    currency: SGD
+                    amount: 15000
+                creditorAgent:
+                  financialInstitutionId:
+                    bic: HSBCSGSGXXX
+                    postalAddress:
+                      country: SG
+                creditor:
+                  name: Creditor Name
+                  postalAddress:
+                    country: SG
+                creditorAccount:
+                  accountNumber: '123456789012'
+                purpose:
+                  code: CSDB
+                remittanceInformation:
+                  unstructured:
+                    - JPM SG Giro To HSBC
+        - name: Mexico Credit Transfer
+          description: Mexico Credit Transfer
+          parameters:
+            ClientDN: CN=apigatewaydev.jpmchase.net, OU=TSS, O=JPMorgan Chase, L=New York, ST=New York, C=US
+            body:
+              paymentMethod: TRF
+              paymentTypeInformation:
+                serviceLevelCode: NURG
+              requestedExecutionDate: '2020-05-21'
+              debtor:
+                name: sample debtor name
+                postalAddress:
+                  country: MX
+                organizationId:
+                  other:
+                    - id: '9573207'
+                      schemeName:
+                        proprietary: JPMCOID
+              debtorAccount:
+                accountNumber: '8363110334'
+                currency: MXN
+              debtorAgent:
+                bic: CHASMXMX
+                country: MX
+              creditTransferTransactionInformation:
+                endToEndId: 137CTMXN
+                amount:
+                  instructedAmount:
+                    currency: MXN
+                    amount: 10.39
+                creditorAgent:
+                  financialInstitutionId:
+                    memberId: '012'
+                    postalAddress:
+                      country: MX
+                creditor:
+                  name: sample creditor name
+                  postalAddress:
+                    country: MX
+                creditorAccount:
+                  accountNumber: '012180040222870980'
+      callbacks:
+        paymentInitiationStatus:
+          '{YOUR-SERVER-DOMAIN.com}':
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/PaymentInitiationStatusCallback'
+                required: true
+              x-examples:
+                - messageId: 333fb869-241a-4efc-b840-9518ac4538eb
+                  messageType: ACH_TXN_STATUS
+                  sendTimeStamp: '2020-03-11T19:50:41.789'
+                  totalNbrOfTxns: 1
+                  transactionData:
+                    - paymentStatus: ACCEPTED
+                      createDateTime: '2020-03-11T19:50:41.784'
+                      crDrIndicator: CR
+                      processingInfo:
+                        statusCode: '0000'
+                        statusText: No Error
+                      reqExeDate: '2018-12-03'
+                      txnAmountCcy: USD
+                      txnAmount: 5.83
+                      endToEndId: HLfffh0j9f
+                      jpmcPmtRefId: b13405a8280741eab405a82807c1eaa0
+                      jpmcPmtBatchId: SCXHUN0E
+              responses:
+                '200':
+                  description: Success
+      tags:
+        - Payment Initiation - LV (ACH)
+      responses:
+        '200':
+          description: |
+            successful operation
+            | Success Code      | Description                               |
+            |---------------    |-------------------------------------------|
+            |  PMT-C001         |  SUCCESS                   |
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transactionResponseObject'
+        '400':
+          description: |
+            | Error Code | Description |
+            |------------|-------------|
+            | PMT-E005   | EndToEndId field is required |
+            | PMT-E006   | EndToEndId is not in correct format |
+            | PMT-E007   | Please re-send request in valid format. These errors include: |
+            |            | - Schema validation failed |
+            |            | - Mandatory Fields Missing |
+            |            | - Invalid Amount |
+            |            | - Invalid Currency |
+            |            | - Invalid Data |
+            |            | - Requested Effective/Collection date must be in valid format: YYYY-MM-DD |
+            |            | - Requested Effective/Collection Date cannot be outside of a valid calendar date: e.g. 2020-90-24 |
+            |            | - Requested Effective/Collection Date cannot be in the past |
+            |            | - Requested Effective/Collection Date cannot be 85 days in the future from the current day |
+            |            | - API shall reject if any of the below characters are provided. Invalid characters: |
+            |            |   - `\n`  : line feed |
+            |            |   - `\u000A`: escaped unicode for line feed |
+            |            |   - `\r`   : carriage return |
+            |            |   - `\u000D` : escaped unicode for carriage return |
+            | PMT-E010   | endToEndId must be unique |
+            | PMT-E011   | instructedAmount or equivalentAmount is required with amount and currency fields |
+            | PMT-E012   | amount field is required |
+            |  PMT-E014     | Invalid field combination; aba + memberId                   |
+            | GCA-023    | Please re-send request in valid format |
+            | GCA-029    | The requested debit account was not found |
+            |  GCA-041     | Invalid parameter combination: debtorAccount must NOT be provided with iban AND accountNumber                   |
+            |  GCA-043    | Invalid parameter combination: When debtorAccount isprovided with iban, then debtorAgent must NOT be provided with abaNumber                  |
+            |  GCA-045     | debtorAccount must be provided with iban or accountNumber                  |
+            |  GCA-047     | When debtorAccount is provided with accountNumber, bic or aba is required. When debtorAccount is provided with iban, bic is required                   |
+            |  GCA-049    | Invalid parameter combination: debtorAgent must NOT be provided with bic AND abaNumber                   |
+            | GCA-051    | ACH Company id and Account combination was not found |
+            | GCA-055    | ACH Company id was not provided |
+            | GCA-056    | bic must be provided with accountNumber |
+            |  GCA-057     | country is required in the debtorAgent                   |
+            |  GCA-059     | serviceLevelCode is required                   |
+            |  GCA-060     | serviceLevelCode value is invalid                   |
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transactionResponseObject'
+        '403':
+          description: |
+            | Error Code      | Description                               |
+            |---------------  |-------------------------------------------|
+            |  GCA-001       | Unauthorized Access                    |
+            |  GCA-003       | Unauthorized Access                    |
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transactionResponseObject'
+        '503':
+          description: |
+            **Service Unavailable**
+
+            | Error Code      | Description                               |
+            |---------------  |-------------------------------------------|
+            |  GCA-099       | System is Unavailable                         |
+            |  GCA-030       | Access API Processing Error                   |
+
+            In some situations a 503 status code is returned due to the API
+            timing out, however the payment is successfully processed. J.P.
+            Morgan recommends that you check the status of the transaction
+            before retrying to submit the payment via API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/transactionResponseObject'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transactionRequestObject'
+        description: Initiate ACH Payments.
+        required: true
+      x-s2o-consumes: []
+      x-s2o-produces: []
+components:
+  schemas:
+    paymentTypeInformation:
+      type: object
+      required:
+        - serviceLevelCode
+      additionalProperties: false
+      properties:
+        serviceLevelCode:
+          type: string
+          description: Service Code - Payment Information Level
+        localInstrument:
+          type: object
+          properties:
+            code:
+              type: string
+            proprietary:
+              type: string
+          additionalProperties: false
+        categoryPurpose:
+          type: object
+          additionalProperties: false
+          properties:
+            code:
+              type: string
+            proprietary:
+              type: string
+              description: "The code 'REVERSAL' can be used here to initiate a US ACH Reversal for eligible transactions. Eligibility requirements for initiating reversals are: \n A original transaction was already submitted via API with the same End to End ID of the reversal being requested \n • Original transaction is not in a status of PENDING, REJECTED, or RETURNED \n • Reversal must be the opposite transaction type of the original transaction \n • A reversal request has not already been submitted \n • requestedExecutionDate of the reversal must be within 5 banking days of the original payment \n • All information besides requestedExecutionDate in the reversal payment instruction must be the same as the original payment (opposite transaction type)"
+        instructionproprietary:
+          type: string
+    processingInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          statusCode:
+            type: string
+          statusText:
+            type: string
+    transactionRequestObject:
+      type: object
+      description: |
+        Carriage returns and line feeds are not permitted. Only the following Latin character set used in payment instructions,
+        will ensure straight-through-processing. This character set is confirmed
+        to be accepted across the majority of banks, markets, and clearing
+        systems worldwide. Usage of additional characters may be supported in
+        some instances but cannot be guaranteed through all systems involved in
+        the payment lifecycle
+
+          | Characters | Comments |
+          |------------|-----------|
+          | A to Z     | UPPERCASE and lowercase|
+          | 0 to 9     |           |
+          |  /         | Forward Oblique|
+          |  -         | Hyphen |
+          |  ?         | Question mark |
+          |  :         | Colon |
+          |  (         | Open bracket |
+          |  )         | Close bracket |
+          |  .         | Period |
+          |  ,         | Comma |
+          |  '         | Apostrophe |
+          |  +         | Plus sign |
+          |  Space     | Space character |
+      required:
+        - paymentMethod
+        - requestedExecutionDate
+        - paymentTypeInformation
+        - debtor
+        - debtorAccount
+        - debtorAgent
+        - creditTransferTransactionInformation
+      properties:
+        paymentMethod:
+          type: string
+          description: Method of payment
+        paymentTypeInformation:
+          $ref: '#/components/schemas/paymentTypeInformation'
+        chargeBearer:
+          type: string
+        requestedExecutionDate:
+          type: string
+          description: Requested Execution Date of the Payment Instruction (e.g. Value Date) in ISO Date format of YYYY-MM-DD. Must be either the current date or within 85 days in the future (Eastern Timezone ET)
+        debtor:
+          $ref: '#/components/schemas/debtor'
+        debtorAccount:
+          $ref: '#/components/schemas/debtorAccount'
+        debtorAgent:
+          $ref: '#/components/schemas/debtorAgent'
+        creditTransferTransactionInformation:
+          $ref: '#/components/schemas/creditTransferTransactionInformation'
+    transactionResponseObject:
+      type: object
+      properties:
+        endToEndId:
+          type: string
+        jpmcPmtRefId:
+          type: string
+          description: JPMC issued unique Id for the payment
+        jpmcPmtBatchId:
+          type: string
+          description: JPMC issued batch Id for the payment. This will provide more transparency about how your transactions are batched ahead of time
+        sendTimeStamp:
+          type: string
+        messageType:
+          type: string
+        processingInfo:
+          $ref: '#/components/schemas/processingInfo'
+      required:
+        - endToEndId
+    PaymentInitiationStatusCallback:
+      type: object
+      required:
+        - sendTimeStamp
+        - messageId
+        - messageType
+        - totalNbrOfTxns
+        - transactionData
+      properties:
+        sendTimeStamp:
+          type: string
+          format: date-time
+          description: Date and time at which the callback message is sent. The date &amp; time are expressed in UTC timezone (without offset). Each re-try of the callback message will contain the same sendTimeStamp of the original callback message until J.P. Morgan receives an HTTP 200 OK for the callback message
+        messageId:
+          type: string
+          description: Unique messageId for the callback message. Each re-try of the callback message will contain the same messageId of the original callback message until J.P. Morgan receives an HTTP 200 OK for the callback message
+          maxLength: 50
+        messageType:
+          type: string
+          description: The type of the message hardcoded to 'ACH_TXN_STATUS'.
+          maxLength: 50
+        totalNbrOfTxns:
+          type: integer
+          description: Total number of payments in the callback message. Each callback message will only contain either Credit or Debit payments.
+        transactionData:
+          type: array
+          items:
+            $ref: '#/components/schemas/transactionData'
+    transactionData:
+      type: object
+      required:
+        - paymentStatus
+        - processingInfo
+        - createDateTime
+        - crDrIndicator
+        - reqExeDate
+        - txnAmountCcy
+        - txnAmount
+        - endToEndId
+        - jpmcPmtRefId
+      properties:
+        paymentStatus:
+          type: string
+          description: 'Short descriptive status text of the payment. Possible values: ''ACCEPTED'', ''HOLD'', ''CLEARED'', ''COMPLETED'', ''REJECTED'', ''RETURNED''. If multiple state updates arrive API Channel at same time, the latest will be sent back to client. The obsolete ones will be discarded. Client is advised not to enforce strict step-by-step state transition validation.'
+        processingInfo:
+          required:
+            - statusCode
+            - statusText
+          type: object
+          properties:
+            statusCode:
+              type: string
+            statusText:
+              type: string
+        createDateTime:
+          type: string
+          format: date-time
+          description: 'Date &amp; Time at which J.P. Morgan receives the payment initiation request. Format : YYYY-MM-DDTHH:MM:SS.sss wth timezone difference'
+        crDrIndicator:
+          type: string
+          description: To classify whether the payment request is a credit or debit. <br> CR = Credit<br> DR = Debit. Each callback message will only contain either Credit or Debit payments.
+        reqExeDate:
+          type: string
+          pattern: '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])'
+          description: Request Execution Date i.e. Value Date in YYYY-MM-DDw which was present in the payment request
+        valueDate:
+          type: string
+          pattern: '[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])'
+          description: Value Date in YYYY-MM-DD
+        txnAmountCcy:
+          type: string
+          maxLength: 3
+          description: Currency of the payment request
+        txnAmount:
+          type: number
+          description: Amount of the paymentrequest
+        endToEndId:
+          type: string
+          maxLength: 15
+        jpmcPmtRefId:
+          type: string
+          maxLength: 36
+          description: JPMC issued unique Id for the payment
+        jpmcPmtBatchId:
+          type: string
+          maxLength: 8
+          description: JPMC issued batch Id for the payment
+        achTraceNumber:
+          type: string
+          description: Original ACH transaction JPMC trace number
+    debtor:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        postalAddress:
+          type: object
+          additionalProperties: false
+          properties:
+            streetName:
+              type: string
+            buildingNumber:
+              type: string
+            postCode:
+              type: string
+            townName:
+              type: string
+            countrySubDivision:
+              type: string
+            country:
+              type: string
+            addressLine:
+              type: array
+              items:
+                type: string
+        organizationId:
+          type: object
+          additionalProperties: false
+          properties:
+            bicOrBei:
+              type: string
+            other:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                  schemeName:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      code:
+                        type: string
+                      proprietary:
+                        type: string
+    debtorAccount:
+      type: object
+      required:
+        - currency
+      properties:
+        type:
+          type: object
+          properties:
+            code:
+              type: string
+            proprietary:
+              type: string
+        currency:
+          type: string
+      oneOf:
+        - $ref: '#/components/schemas/accountNumber'
+        - $ref: '#/components/schemas/iban'
+    debtorAgent:
+      type: object
+      additionalProperties: false
+      required:
+        - country
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        otherId:
+          type: string
+      oneOf:
+        - $ref: '#/components/schemas/bic'
+        - $ref: '#/components/schemas/aba'
+        - $ref: '#/components/schemas/memberId'
+    creditTransferTransactionInformation:
+      type: object
+      required:
+        - endToEndId
+        - amount
+        - creditor
+      additionalProperties: false
+      properties:
+        endToEndId:
+          type: string
+          pattern: ^.{1,15}$
+          description: Alphanumeric characters only. Any non-alphanumeric values may cause processing issues. Hyphen and colon in the first character are not permitted. If initiating an EMEA payment, ensure to use upper case alpha charactersnumeric characters only.
+        amount:
+          type: object
+          required:
+            - instructedAmount
+          additionalProperties: false
+          properties:
+            instructedAmount:
+              type: object
+              additionalProperties: false
+              required:
+                - amount
+                - currency
+              properties:
+                currency:
+                  type: string
+                  pattern: ^[A-Z]{3,3}$
+                amount:
+                  type: number
+                  minimum: 0
+            equivalentAmount:
+              type: object
+              additionalProperties: false
+              properties:
+                currency:
+                  type: string
+                amount:
+                  type: number
+                currencyOfTransfer:
+                  type: string
+        exchangeRateType:
+          type: string
+        ultimateDebtor:
+          type: object
+          additionalProperties: false
+          properties:
+            name:
+              type: string
+            postalAddress:
+              type: object
+              additionalProperties: false
+              properties:
+                streetName:
+                  type: string
+                buildingNumber:
+                  type: string
+                postCode:
+                  type: string
+                townName:
+                  type: string
+                countrySubDivision:
+                  type: string
+                country:
+                  type: string
+                addressLine:
+                  type: array
+                  items:
+                    type: string
+            organizationId:
+              type: object
+              additionalProperties: false
+              properties:
+                bicOrBei:
+                  type: string
+                other:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      schemeName:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          code:
+                            type: string
+                          proprietary:
+                            type: string
+                      issuer:
+                        type: string
+            privateId:
+              type: object
+              additionalProperties: false
+              properties:
+                dateAndPlaceOfBirth:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    birthDate:
+                      type: string
+                    provinceOfBirth:
+                      type: string
+                    cityOfBirth:
+                      type: string
+                    countryOfBirth:
+                      type: string
+                other:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      schemeName:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          code:
+                            type: string
+                          proprietary:
+                            type: string
+                      issuer:
+                        type: string
+        intermediaryAgent1:
+          type: object
+          additionalProperties: false
+          properties:
+            financialInstitutionId:
+              type: object
+              additionalProperties: false
+              properties:
+                bic:
+                  type: string
+                aba:
+                  type: string
+                name:
+                  type: string
+                postalAddress:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    streetName:
+                      type: string
+                    buildingNumber:
+                      type: string
+                    postCode:
+                      type: string
+                    townName:
+                      type: string
+                    countrySubDivision:
+                      type: string
+                    country:
+                      type: string
+                    addressLine:
+                      type: array
+                      items:
+                        type: string
+        creditorAgent:
+          type: object
+          additionalProperties: false
+          properties:
+            financialInstitutionId:
+              type: object
+              additionalProperties: false
+              properties:
+                bic:
+                  type: string
+                memberId:
+                  type: string
+                aba:
+                  type: string
+                clearingSystemIdCode:
+                  type: string
+                name:
+                  type: string
+                postalAddress:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    streetName:
+                      type: string
+                    buildingNumber:
+                      type: string
+                    postCode:
+                      type: string
+                    townName:
+                      type: string
+                    countrySubDivision:
+                      type: string
+                    country:
+                      type: string
+                    addressLine:
+                      type: array
+                      items:
+                        type: string
+                otherId:
+                  type: string
+            branchId:
+              type: string
+        creditorAgentAccount:
+          type: object
+          additionalProperties: false
+          properties:
+            iban:
+              type: string
+            otherId:
+              type: string
+        creditor:
+          type: object
+          additionalProperties: false
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            postalAddress:
+              type: object
+              additionalProperties: false
+              properties:
+                streetName:
+                  type: string
+                buildingNumber:
+                  type: string
+                postCode:
+                  type: string
+                townName:
+                  type: string
+                countrySubDivision:
+                  type: string
+                country:
+                  type: string
+                addressLine:
+                  type: array
+                  items:
+                    type: string
+            organizationId:
+              type: object
+              additionalProperties: false
+              properties:
+                bicOrBei:
+                  type: string
+                other:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      schemeName:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          code:
+                            type: string
+                          proprietary:
+                            type: string
+                      issuer:
+                        type: string
+            countryOfResidence:
+              type: string
+            privateId:
+              type: object
+              additionalProperties: false
+              properties:
+                dateAndPlaceOfBirth:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    birthDate:
+                      type: string
+                    provinceOfBirth:
+                      type: string
+                    cityOfBirth:
+                      type: string
+                    countryOfBirth:
+                      type: string
+                other:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      schemeName:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          code:
+                            type: string
+                          proprietary:
+                            type: string
+                      issuer:
+                        type: string
+            contactDetails:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  type: string
+                emailAddress:
+                  type: string
+        creditorAccount:
+          type: object
+          additionalProperties: false
+          properties:
+            iban:
+              type: string
+            accountNumber:
+              type: string
+            type:
+              type: object
+              additionalProperties: false
+              properties:
+                code:
+                  type: string
+                proprietary:
+                  type: string
+        ultimateCreditor:
+          type: object
+          additionalProperties: false
+          properties:
+            name:
+              type: string
+            postalAddress:
+              type: object
+              additionalProperties: false
+              properties:
+                streetName:
+                  type: string
+                buildingNumber:
+                  type: string
+                postCode:
+                  type: string
+                townName:
+                  type: string
+                countrySubDivision:
+                  type: string
+                country:
+                  type: string
+                addressLine:
+                  type: array
+                  items:
+                    type: string
+            organizationId:
+              type: object
+              additionalProperties: false
+              properties:
+                bicOrBei:
+                  type: string
+                other:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      schemeName:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          code:
+                            type: string
+                          proprietary:
+                            type: string
+                      issuer:
+                        type: string
+            privateId:
+              type: object
+              additionalProperties: false
+              properties:
+                dateAndPlaceOfBirth:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    birthDate:
+                      type: string
+                    provinceOfBirth:
+                      type: string
+                    cityOfBirth:
+                      type: string
+                    countryOfBirth:
+                      type: string
+                other:
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      id:
+                        type: string
+                      schemeName:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          code:
+                            type: string
+                          proprietary:
+                            type: string
+                      issuer:
+                        type: string
+        instructionForCreditorAgent:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              code:
+                type: string
+              instructionInformation:
+                type: string
+        instructionForDebtorAgent:
+          type: string
+        purpose:
+          type: object
+          additionalProperties: false
+          properties:
+            code:
+              type: string
+            proprietary:
+              type: string
+        regulatoryReporting:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              details:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    category:
+                      type: string
+                    code:
+                      type: string
+                    information:
+                      type: string
+                    amount:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        currency:
+                          type: string
+                        amount:
+                          type: number
+        tax:
+          type: object
+          additionalProperties: false
+          properties:
+            creditor:
+              type: object
+              additionalProperties: false
+              properties:
+                taxId:
+                  type: string
+                registrationIdentification:
+                  type: string
+                taxType:
+                  type: string
+            debtor:
+              type: object
+              additionalProperties: false
+              properties:
+                taxId:
+                  type: string
+                taxType:
+                  type: string
+            administrationZone:
+              type: string
+            referenceNumber:
+              type: string
+            totalTaxableBaseAmount:
+              type: object
+              additionalProperties: false
+              properties:
+                currency:
+                  type: string
+                amount:
+                  type: number
+            totalTaxAmount:
+              type: object
+              additionalProperties: false
+              properties:
+                currency:
+                  type: string
+                amount:
+                  type: number
+            sequenceNumber:
+              type: string
+            record:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  vat:
+                    type: string
+                  category:
+                    type: string
+                  categoryDetails:
+                    type: string
+                  formsCode:
+                    type: string
+                  taxAmount:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      rate:
+                        type: string
+                      taxableBaseAmount:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          currency:
+                            type: string
+                          amount:
+                            type: number
+                      totalAmount:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          currency:
+                            type: string
+                          amount:
+                            type: number
+                  additionalInformation:
+                    type: string
+        remittanceInformation:
+          type: object
+          additionalProperties: false
+          properties:
+            unstructured:
+              type: array
+              items:
+                type: string
+            structured:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  referredDocumentInformation:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      codeOrProprietary:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          code:
+                            type: string
+                          proprietary:
+                            type: string
+                      number:
+                        type: string
+                      relatedDate:
+                        type: string
+                  referredDocumentAmount:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        duePaybleAmount:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            currency:
+                              type: string
+                            amount:
+                              type: number
+                        discountAppliedAmount:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            currency:
+                              type: string
+                            amount:
+                              type: number
+                        creditNoteAmount:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            currency:
+                              type: string
+                            amount:
+                              type: number
+                        taxAmount:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            currency:
+                              type: string
+                            amount:
+                              type: number
+                        adjustmentAmountAndReason:
+                          type: array
+                          items:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              currency:
+                                type: string
+                              amount:
+                                type: number
+                              creditDebitIndicator:
+                                type: string
+                              additionalInformation:
+                                type: string
+                        remittedAmount:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            currency:
+                              type: string
+                            amount:
+                              type: number
+                  creditorReferenceInformation:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      type:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          codeOrProprietary:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              code:
+                                type: string
+                              proprietary:
+                                type: string
+                          issuer:
+                            type: string
+                      reference:
+                        type: string
+                  additionalRemittanceInformation:
+                    type: array
+                    items:
+                      type: string
+    iban:
+      type: object
+      required:
+        - iban
+      properties:
+        iban:
+          type: string
+    accountNumber:
+      type: object
+      required:
+        - accountNumber
+      properties:
+        accountNumber:
+          type: string
+    bic:
+      type: object
+      required:
+        - bic
+      properties:
+        bic:
+          type: string
+    memberId:
+      type: object
+      required:
+        - memberId
+      properties:
+        memberId:
+          type: string
+    aba:
+      type: object
+      required:
+        - aba
+      properties:
+        aba:
+          type: string
+x-jpmc-securityDefinitions:
+  JPMC-OAuth2: {}
+x-jpmc-security: {}
